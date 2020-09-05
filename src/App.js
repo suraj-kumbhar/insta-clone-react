@@ -4,6 +4,7 @@ import Post from './components/Post';
 import { useState } from 'react';
 import { db, auth, storage } from './firebase';
 import { Modal, makeStyles, Button, Input } from '@material-ui/core';
+import ImageUpload from './components/ImageUpload';
 
 function getModalStyle() {
   return {
@@ -50,14 +51,16 @@ function App() {
   }, [user, username]);
 
   useEffect(() => {
-    db.collection('posts').onSnapshot((snapshot) => {
-      setPosts(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          post: doc.data(),
-        }))
-      );
-    });
+    db.collection('posts')
+      .orderBy('timestamp', 'desc')
+      .onSnapshot((snapshot) => {
+        setPosts(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            post: doc.data(),
+          }))
+        );
+      });
   }, []);
 
   const signUp = (e) => {
@@ -68,21 +71,27 @@ function App() {
         authUser.user.updateProfile({
           displayName: username,
         });
+        setOpen(false);
       })
       .catch((error) => alert(error.message));
-    setOpen(false);
   };
 
   const signIn = (e) => {
     e.preventDefault();
     auth
       .signInWithEmailAndPassword(email, password)
+      .then(() => setOpenSignIn(false))
       .catch((error) => alert(error.message));
-    setOpenSignIn(false);
   };
 
   return (
     <div className="app">
+      {user?.displayName ? (
+        <ImageUpload username={user.displayName} />
+      ) : (
+        <h3>Sorry you need to login to upload</h3>
+      )}
+
       <Modal open={open} onClose={() => setOpen(false)}>
         <div style={modalStyle} className={classes.paper}>
           <form className="app__signup">
@@ -116,6 +125,7 @@ function App() {
           </form>
         </div>
       </Modal>
+
       <Modal open={openSignIn} onClose={() => setOpenSignIn(false)}>
         <div style={modalStyle} className={classes.paper}>
           <form className="app__signup">
