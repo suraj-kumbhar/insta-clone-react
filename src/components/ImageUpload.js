@@ -53,8 +53,12 @@ function ImageUpload({ username }) {
     );
   };
   return (
-    <div>
-      <LinearProgress variant="determinate" value={progress} />
+    <div className="imageUpload">
+      <LinearProgress
+        className="imageUpload__progress"
+        variant="determinate"
+        value={progress}
+      />
 
       <Input
         type="text"
