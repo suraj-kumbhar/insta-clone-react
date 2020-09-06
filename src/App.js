@@ -192,6 +192,7 @@ function App() {
               username={post.username}
               imageUrl={post.imageUrl}
               caption={post.caption}
+              user={user}
             />
           ))}
         </div>
@@ -211,11 +212,7 @@ function App() {
         </div>
       </div>
 
-      {user?.displayName ? (
-        <ImageUpload username={user.displayName} />
-      ) : (
-        <h3>Sorry you need to login to upload</h3>
-      )}
+      {user?.displayName && <ImageUpload username={user.displayName} />}
     </div>
   );
 }
